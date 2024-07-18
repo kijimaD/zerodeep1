@@ -34,6 +34,7 @@ class TwoLayerNet:
     return cross_entropy_error(y, t)
 
   # 認識精度
+  # 全体から求める
   def accuracy(self, x, t):
     y = self.predict(x)
     y = np.argmax(y, axis=1)
@@ -47,7 +48,7 @@ class TwoLayerNet:
   def numerical_gradient(self, x, t):
       loss_W = lambda W: self.loss(x, t)
 
-      grads = {}
+      grads = {} # 勾配
       grads['W1'] = numerical_gradient(loss_W, self.params['W1'])
       grads['b1'] = numerical_gradient(loss_W, self.params['b1'])
       grads['W2'] = numerical_gradient(loss_W, self.params['W2'])
