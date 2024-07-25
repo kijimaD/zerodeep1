@@ -197,7 +197,7 @@ class BatchNormalization:
 
         return dx
 
-
+# 畳み込み層
 class Convolution:
     def __init__(self, W, b, stride=1, pad=0):
         self.W = W
@@ -215,17 +215,16 @@ class Convolution:
         self.db = None
 
     def forward(self, x):
-        FN, C, FH, FW = self.W.shape
+        FN, C, FH, FW = self.W.shape # フィルターの個数、チャンネル、フィルター高さ、フィルター幅
         N, C, H, W = x.shape
         out_h = 1 + int((H + 2*self.pad - FH) / self.stride)
         out_w = 1 + int((W + 2*self.pad - FW) / self.stride)
 
-        col = im2col(x, FH, FW, self.stride, self.pad)
-        col_W = self.W.reshape(FN, -1).T
+        col = im2col(x, FH, FW, self.stride, self.pad) # 入力データを展開する
+        col_W = self.W.reshape(FN, -1).T # フィルターを二次元配列に展開する
 
         out = np.dot(col, col_W) + self.b
         out = out.reshape(N, out_h, out_w, -1).transpose(0, 3, 1, 2)
-
         self.x = x
         self.col = col
         self.col_W = col_W
@@ -245,7 +244,8 @@ class Convolution:
 
         return dx
 
-
+# プーリング層
+# 最大値を計算する
 class Pooling:
     def __init__(self, pool_h, pool_w, stride=2, pad=0):
         self.pool_h = pool_h
@@ -265,7 +265,7 @@ class Pooling:
         col = col.reshape(-1, self.pool_h*self.pool_w)
 
         arg_max = np.argmax(col, axis=1)
-        out = np.max(col, axis=1)
+        out = np.max(col, axis=1) # 最大値
         out = out.reshape(N, out_h, out_w, C).transpose(0, 3, 1, 2)
 
         self.x = x
